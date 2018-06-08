@@ -23,11 +23,18 @@
 
     const actions = {
       size2res: () => state => {
-        val = document.getElementById("sizeSelectBox").value
+        const val = document.getElementById("sizeSelectBox").value
         return {
           horizontal: size2resTable[val][0],
           vertical: size2resTable[val][1]
         }
+      },
+      inputRes: (e) => state => {
+        console.log(e)
+        console.log(state)
+        const f = e.srcElement.id
+        const newVal = Number(e.srcElement.value)
+        return {...state, [f]:newVal}
       }
     }
 
@@ -40,8 +47,18 @@
           h("option", {value: "3"}, "23.8"),
         ]),
         h("form", {}, [
-          h("input", {id: "horizontal", type: "text", value: state.horizontal}),
-          h("input", {id: "vertical", type: "text", value: state.vertical})
+          h("input", {
+            id: "horizontal",
+            type: "number",
+            value: state.horizontal,
+            oninput: actions.inputRes
+            }),
+          h("input", {
+            id: "vertical",
+            type: "number",
+            value: state.vertical,
+            oninput: actions.inputRes
+            })
         ])
       ])
     )
