@@ -34,13 +34,13 @@ const view = (state, actions) => (
     h("input", {id: "displayHorizontalResolution", type: "number", value: state.displayHorizontalResolution, oninput: actions.update}),
     h("p"),
     "display pixel size(mm/pix)",
-    h("input", {id: "displayPixelSize", type: "number", readonly: "readonly", value: state.displayPixelSize}),
-    h("hr"),
+    h("input", {id: "displayPixelSize", class: "readonly", type: "number", readonly: "readonly", value: state.displayPixelSize}),
+    h("p"),
     "object size(deg)",
     h("input", {id: "objectSize", type: "number", value: state.objectSize, oninput: actions.update}),
     h("p"),
     "pixels(pix)",
-    h("input", {id: "pixels", type: "number", readonly: "readonly", value: state.pixels})
+    h("input", {id: "pixels", class: "readonly", type: "number", readonly: "readonly", value: state.pixels})
   ])
 )
 
