@@ -6,7 +6,7 @@ const state = {
   displayHorizontalResolution: 1920,
   displayPixelSize: 527.04 / 1920,
   objectSize: 1,
-  pixels: null
+  pixels: 570 * Math.tan(1 / 180 * Math.PI) / (527.04 / 1920)
 }
 
 const actions = {
