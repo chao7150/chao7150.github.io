@@ -5,18 +5,19 @@ const state = {
   displayHorizontalSize: 527.04,
   displayHorizontalResolution: 1920,
   displayPixelSize: 527.04 / 1920,
-  objectSize: 1,
+  objectSizeOnRetina: 1,
+  objectSizeOnDisplay: 570 * Math.tan(1 / 180 * Math.PI),
   pixels: 570 * Math.tan(1 / 180 * Math.PI) / (527.04 / 1920)
 }
 
 const actions = {
   update: (e) => state => {
-    console.log(state)
     state = {...state, [e.srcElement.id]: Number(e.srcElement.value)}
     return {
       ...state,
       displayPixelSize: state.displayHorizontalSize / state.displayHorizontalResolution,
-      pixels: state.distance * Math.tan(state.objectSize / 180 * Math.PI) / state.displayPixelSize
+      objectSizeOnDisplay: state.distance * Math.tan(state.objectSizeOnRetina / 180 * Math.PI),
+      pixels: state.distance * Math.tan(state.objectSizeOnRetina / 180 * Math.PI) / state.displayPixelSize
     }
   }
 }
@@ -36,8 +37,11 @@ const view = (state, actions) => (
     "display pixel size(mm/pix)",
     h("input", {id: "displayPixelSize", class: "readonly", type: "number", readonly: "readonly", value: state.displayPixelSize}),
     h("p"),
-    "object size(deg)",
-    h("input", {id: "objectSize", type: "number", value: state.objectSize, oninput: actions.update}),
+    "object size on retina(deg)",
+    h("input", {id: "objectSizeOnRetina", type: "number", value: state.objectSizeOnRetina, oninput: actions.update}),
+    h("p"),
+    "object size on display(mm)",
+    h("input", {id: "objectSizeOnDisplay", class: "readonly", type: "number", readonly: "readonly", value: state.objectSizeOnDisplay}),
     h("p"),
     "pixels(pix)",
     h("input", {id: "pixels", class: "readonly", type: "number", readonly: "readonly", value: state.pixels})
