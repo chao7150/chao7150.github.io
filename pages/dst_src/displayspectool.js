@@ -23,6 +23,7 @@ const actions = {
 
 const view = (state, actions) => (
   h("div", {}, [
+    h("h1", {id: "spoiler"}, "このページではJavaScript（じゃばすくりぷと）と呼ばれるプログラミング言語を利用し、あなたのコンピュータに計算を行わせてページの描画・更新を行います。あなたはこれに同意しない場合直ちにブラウザの戻るボタンをクリックしてこのページを立ち去ってください。"),
     h("h1", {}, "displayspectool"),
     "display distance(mm)",
     h("input", {id: "distance", type: "number", value: state.distance, oninput: actions.update}),
