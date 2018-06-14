@@ -24,7 +24,8 @@ const actions = {
 
 const view = (state, actions) => (
   h("div", {}, [
-    h("h1", {id: "spoiler"}, "このページではJavaScript（じゃばすくりぷと）と呼ばれるプログラミング言語を利用し、あなたのコンピュータに計算を行わせてページの描画・更新を行います。あなたはこれに同意しない場合直ちにブラウザの戻るボタンをクリックしてこのページを立ち去ってください。"),
+    h("h1", {id: "spoiler"}, "このページではJavaScript（じゃばすくりぷと）と呼ばれるプログラミング言語を利用し、あなたのコンピュータに計算を行わせてページの描画・更新を行います。あなたはこれに同意しない場合直ちに以下のリンクをクリックしてこのページを立ち去ってください。なお下記リンク先のサイトがあなたのコンピュータにいかなる動作を要求するかについて私は関知しません。"),
+    h("a", {href: "http://elaws.e-gov.go.jp/search/elawsSearch/elaws_search/lsg0500/detail?lawId=140AC0000000045&openerCode=1#740", id: "spoiler"}, "出口"),
     h("h1", {}, "displayspectool"),
     "display distance(mm)",
     h("input", {id: "distance", type: "number", value: state.distance, oninput: actions.update}),
