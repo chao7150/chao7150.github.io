@@ -1,12 +1,16 @@
 const { h, app } = hyperapp
 
+const settings = {
+  initialNumberOfDigits: 4
+}
+
+const log = []
+
 const state = {
-  now: "memorize",
   number: "",
   presentation: "",
-  numberOfDigits: 4,
+  numberOfDigits: settings.initialNumberOfDigits,
   inputBox: "",
-  showNumber: "",
   inputReadonly: "readonly"
 }
 
@@ -18,10 +22,10 @@ const actions = {
   submit: (e) => (state, actions) => {
     if (e.keyCode == 13) {
       state = { ...state, now: "feedback" }
-      if (state.presentation == state.inputBox) {
-        state = { ...state, presentation: "correct", numberOfDigits: state.numberOfDigits + 1 }
+      if (state.number == state.inputBox) {
+        state = { ...state, presentation: "correct", inputReadonly: "readonly", numberOfDigits: state.numberOfDigits + 1 }
       } else {
-        state = { ...state, presentation: "incorrect", numberOfDigits: state.numberOfDigits - 1 }
+        state = { ...state, presentation: "incorrect", inputReadonly: "readonly", numberOfDigits: state.numberOfDigits - 1 }
       }
       setTimeout(actions.startMemorize, 3000)
     }
@@ -33,28 +37,26 @@ const actions = {
       const digit = String(Math.round(Math.random() * 10))
       newNumber += digit
     }
-    state = { ...state, now: "memorize", number: newNumber, presentation: newNumber, inputBox: "" }
+    state = { ...state, number: newNumber, presentation: newNumber, inputBox: "" }
     setTimeout(actions.endMemorize, 3000)
     return state
   },
   endMemorize: () => (state, actions) => {
-    console.log("aa")
-    state = { ...state, presentation: " " }
+    state = { ...state, presentation: "XXXXXXXXXXXX" }
     setTimeout(actions.startAnswer, 5000)
     return state
   },
   startAnswer: () => state => {
-    console.log("start answer")
-    state = { ...state, readonly: "" }
+    state = { ...state, inputReadonly: "" }
     return state
   }
 }
 
 const view = (state, actions) => (
   h("div", {}, [
-    h("h1", {}, "memory experiment"),
-    h("p", { visibility: state.showNumber }, state.presentation),
-    h("input", { value: state.inputBox, oninput: actions.updateInput, onkeydown: actions.submit, readonly: state.inputReadonly })
+    h("h1", {  }, "memory experiment"),
+    h("p", { oncopy: () => false }, state.presentation),
+    h("input", { value: state.inputBox, oninput: actions.updateInput, onkeydown: actions.submit, [state.inputReadonly]: ""})
   ])
 )
 
