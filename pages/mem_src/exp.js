@@ -1,62 +1,103 @@
 const { h, app } = hyperapp
 
 const settings = {
-  initialNumberOfDigits: 4
+  initialDifficulty: 4,
+  trials: 5
 }
 
-const log = []
-
 const state = {
-  number: "",
   presentation: "",
-  numberOfDigits: settings.initialNumberOfDigits,
+  visibility: "visible",
   inputBox: "",
-  inputReadonly: "readonly"
+  result: "",
+  inputReadonly: "readonly",
+  trialNum: 1,
+  series: 1, // 上昇系列:1, 下降系列:-1
+  numberOfDigits: settings.initialDifficulty,
+  log: [["trialNum", "number", "correct", "numberOfDigits"]]
 }
 
 const actions = {
-  updateInput: (e) => state => {
-    state = { ...state, inputBox: e.target.value }
-    return state
-  },
-  submit: (e) => (state, actions) => {
-    if (e.keyCode == 13) {
-      state = { ...state, now: "feedback" }
-      if (state.number == state.inputBox) {
-        state = { ...state, presentation: "correct", inputReadonly: "readonly", numberOfDigits: state.numberOfDigits + 1 }
-      } else {
-        state = { ...state, presentation: "incorrect", inputReadonly: "readonly", numberOfDigits: state.numberOfDigits - 1 }
-      }
-      setTimeout(actions.startMemorize, 3000)
-    }
-    return state
-  },
   startMemorize: () => (state, actions) => {
-    newNumber = ""
+    let newNumber = ""
     for (let i = 0; i < state.numberOfDigits; i++) {
-      const digit = String(Math.round(Math.random() * 10))
+      const digit = String(Math.floor(Math.random() * 10))
       newNumber += digit
     }
-    state = { ...state, number: newNumber, presentation: newNumber, inputBox: "" }
     setTimeout(actions.endMemorize, 3000)
-    return state
+    return { ...state, presentation: newNumber, inputBox: "" }
   },
   endMemorize: () => (state, actions) => {
-    state = { ...state, presentation: "XXXXXXXXXXXX" }
     setTimeout(actions.startAnswer, 5000)
-    return state
+    return { ...state, visibility: "hidden" }
   },
-  startAnswer: () => state => {
-    state = { ...state, inputReadonly: "" }
-    return state
+  startAnswer: () => state => ({ ...state, inputReadonly: "" }),
+  submit: e => (state, actions) => {
+    if (e.keyCode !== 13) {
+      return state
+    }
+    // 正解判定
+    const correct = state.presentation == state.inputBox ? true : false
+    latestTrialLog = [
+      state.trialNum,
+      state.presentation,
+      correct ? 1 : 0,
+      state.numberOfDigits
+    ]
+    const nextSeries = actions.switchSeries(correct)
+    state = {
+      ...state,
+      trialNum: state.trialNum + 1,
+      log: state.log.concat([latestTrialLog]),
+      presentation: correct ? "correct" : "incorrect",
+      visibility: "visible",
+      numberOfDigits: state.numberOfDigits + nextSeries,
+      series: nextSeries,
+      inputReadonly: "readonly"
+    }
+    if (state.trialNum - 1 == settings.trials) {
+      actions.endExp(latestTrialLog)
+    } else {
+      setTimeout(actions.startMemorize, 3000)
+      return state
+    }
+  },
+  endExp: log => (state, actions) => ({ ...state, result: actions.createCSV(state.log.concat([log])) }),
+  createCSV: array2d => array2d.map(row => row.join(",")).join("\r\n"),
+  switchSeries: correct => state => {
+    if (state.trialNum == 1) {
+      return state.series
+    }
+    if (state.series == 1 && state.log[state.log.length - 1][2] == 0 && !correct) {
+      return -1
+    } else if (state.series == -1 && state.log[state.log.length - 1][2] == 1 && correct) {
+      return 1
+    } else {
+      return state.series
+    }
+  },
+  updateInput: e => state => {
+    return { ...state, inputBox: e.target.value }
   }
 }
 
 const view = (state, actions) => (
   h("div", {}, [
-    h("h1", {  }, "memory experiment"),
-    h("p", { oncopy: () => false }, state.presentation),
-    h("input", { value: state.inputBox, oninput: actions.updateInput, onkeydown: actions.submit, [state.inputReadonly]: ""})
+    h("main", { class: "center" }, [
+      h("h1", {}, "memory experiment"),
+      h("h2", {
+        class: "disable-copy",
+        style: { visibility: state.visibility }
+      }, state.presentation),
+      h("input", {
+        value: state.inputBox,
+        oninput: actions.updateInput,
+        onkeydown: actions.submit,
+        [state.inputReadonly]: ""
+      })
+    ]),
+    h("br"),
+    h("pre", {}, state.result)
   ])
 )
 
