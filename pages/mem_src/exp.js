@@ -14,7 +14,8 @@ const state = {
   trialNum: 1,
   series: 1, // 上昇系列:1, 下降系列:-1
   numberOfDigits: settings.initialDifficulty,
-  log: [["trialNum", "number", "correct", "numberOfDigits"]]
+  log: [["trialNum", "number", "correct", "numberOfDigits"]],
+  remaingTurn: 20
 }
 
 const actions = {
@@ -53,9 +54,10 @@ const actions = {
       visibility: "visible",
       numberOfDigits: state.numberOfDigits + nextSeries,
       series: nextSeries,
-      inputReadonly: "readonly"
+      inputReadonly: "readonly",
+      remaingTurn: state.remaingTurn - (nextSeries != state.series ? 1 : 0)
     }
-    if (state.trialNum - 1 == settings.trials) {
+    if (state.remaingTurn == 0) {
       actions.endExp(latestTrialLog)
     } else {
       setTimeout(actions.startMemorize, 3000)
