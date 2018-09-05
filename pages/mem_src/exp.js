@@ -10,12 +10,12 @@ const state = {
   visibility: "visible",
   inputBox: "",
   result: "",
-  inputReadonly: "readonly",
+  inputDisabled: "disabled",
   trialNum: 1,
-  series: 1, // 上昇系列:1, 下降系列:-1
+  seriesType: 1, // 上昇系列:1, 下降系列:-1
   numberOfDigits: settings.initialDifficulty,
-  log: [["trialNum", "number", "correct", "numberOfDigits"]],
-  remaingTurn: 20
+  log: [["trialNum", "series", "number", "response", "numberOfDigits", "correct"]],
+  seriesNum: 1
 }
 
 const actions = {
@@ -25,57 +25,83 @@ const actions = {
       const digit = String(Math.floor(Math.random() * 10))
       newNumber += digit
     }
-    setTimeout(actions.endMemorize, 3000)
+    setTimeout(actions.endMemorize, 1000)
     return { ...state, presentation: newNumber, inputBox: "" }
   },
   endMemorize: () => (state, actions) => {
-    setTimeout(actions.startAnswer, 5000)
+    setTimeout(actions.startAnswer, 1000)
     return { ...state, visibility: "hidden" }
   },
-  startAnswer: () => state => ({ ...state, inputReadonly: "" }),
+  startAnswer: () => state => {
+    console.log(document.getElementById("js-input-form"))
+    document.getElementById("js-input-form").focus()
+    return { ...state, inputDisabled: "" }
+  },
   submit: e => (state, actions) => {
     if (e.keyCode !== 13) {
       return state
     }
     // 正解判定
-    const correct = state.presentation == state.inputBox ? true : false
+    const correct = state.presentation == state.inputBox
     latestTrialLog = [
       state.trialNum,
+      state.seriesNum,
       state.presentation,
-      correct ? 1 : 0,
-      state.numberOfDigits
+      state.inputBox,
+      state.numberOfDigits,
+      correct ? 1 : 0
     ]
-    const nextSeries = actions.switchSeries(correct)
+    const nextSeriesType = actions.switchSeriesType(correct)
+    console.log(nextSeriesType)
     state = {
       ...state,
       trialNum: state.trialNum + 1,
       log: state.log.concat([latestTrialLog]),
       presentation: correct ? "correct" : "incorrect",
       visibility: "visible",
-      numberOfDigits: state.numberOfDigits + nextSeries,
-      series: nextSeries,
-      inputReadonly: "readonly",
-      remaingTurn: state.remaingTurn - (nextSeries != state.series ? 1 : 0)
+      numberOfDigits: state.numberOfDigits + nextSeriesType,
+      seriesType: nextSeriesType,
+      inputDisabled: "disabled",
+      seriesNum: state.seriesNum + (nextSeriesType != state.seriesType ? 1 : 0),
     }
-    if (state.remaingTurn == 0) {
+    if (state.seriesNum == 2) {
       actions.endExp(latestTrialLog)
     } else {
-      setTimeout(actions.startMemorize, 3000)
+      setTimeout(actions.startMemorize, 1000)
       return state
     }
   },
-  endExp: log => (state, actions) => ({ ...state, result: actions.createCSV(state.log.concat([log])) }),
+  endExp: finalState => actions => {
+    const memCap = actions.calcMemCap(finalState.log)
+    return { ...state, result: actions.createCSV(finalState.log.concat(["Your memory capacity is", memCap])) }
+  },
   createCSV: array2d => array2d.map(row => row.join(",")).join("\r\n"),
-  switchSeries: correct => state => {
+  switchSeriesType: correct => state => {
     if (state.trialNum == 1) {
-      return state.series
+      return state.seriesType
     }
-    if (state.series == 1 && state.log[state.log.length - 1][2] == 0 && !correct) {
+    if (state.seriesType == 1 && state.log[state.log.length - 1][5] == 0 && !correct) {
       return -1
-    } else if (state.series == -1 && state.log[state.log.length - 1][2] == 1 && correct) {
+    } else if (state.seriesType == -1 && state.log[state.log.length - 1][5] == 1 && correct) {
       return 1
     } else {
-      return state.series
+      return state.seriesType
+    }
+  },
+  calcMemCap: logs => actions => {
+    var sum = 0
+    for (let i = 1; i <= 20; i++) {
+      const thisSeries = logs.filter(log => log[1] == i)
+      sum += actions.calcReprOfSeries(thisSeries)
+    }
+    return sum / 20
+  },
+  calcReprOfSeries: thisSeries => {
+    const correctTrials = thisSeries.filter(trial => trial[5] == 1)
+    if (correctTrials.length == 0) {
+      return thisSeries[0][numberOfDigits] - 1
+    } else {
+      return Math.max(correctTrials.map(trial => trial[4]))
     }
   },
   updateInput: e => state => {
@@ -92,10 +118,11 @@ const view = (state, actions) => (
         style: { visibility: state.visibility }
       }, state.presentation),
       h("input", {
+        id: "js-input-form",
         value: state.inputBox,
         oninput: actions.updateInput,
         onkeydown: actions.submit,
-        [state.inputReadonly]: ""
+        [state.inputDisabled]: "disabled"
       })
     ]),
     h("br"),
