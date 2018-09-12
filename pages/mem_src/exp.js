@@ -10,7 +10,7 @@ const state = {
   visibility: "visible",
   inputBox: "",
   result: "",
-  inputDisabled: "disabled",
+  readonly: "readonly",
   trialNum: 1,
   seriesType: 1, // 上昇系列:1, 下降系列:-1
   numberOfDigits: settings.initialDifficulty,
@@ -34,10 +34,15 @@ const actions = {
   },
   startAnswer: () => state => {
     document.getElementById("js-input-form").focus()
-    return { ...state, inputDisabled: "" }
+    return { ...state, readonly: "" }
   },
   submit: e => (state, actions) => {
+    // エンターキー以外は無視
     if (e.keyCode !== 13) {
+      return state
+    }
+    // 保持時間中の入力は受け付けない
+    if (state.readonly == "readonly") {
       return state
     }
     // 正解判定
@@ -59,12 +64,12 @@ const actions = {
       visibility: "visible",
       numberOfDigits: state.numberOfDigits + nextSeriesType,
       seriesType: nextSeriesType,
-      inputDisabled: "disabled",
+      readonly: "readonly",
       seriesNum: state.seriesNum + (nextSeriesType != state.seriesType ? 1 : 0),
     }
-    if (state.seriesNum == 11) {
+    if (state.seriesNum > settings.trials) {
       const memCap = actions.calcMemCap(state.log)
-      return { ...state, result: actions.createCSV(state.log.concat([["Your memory capacity", memCap]])) }
+      return { ...state, result: actions.createCSV(state.log.concat([["capacity", memCap]])) }
     } else {
       setTimeout(actions.startMemorize, 1000)
       return state
@@ -85,18 +90,18 @@ const actions = {
   },
   calcMemCap: logs => {
     var sum = 0
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= settings.trials; i++) {
       const thisSeries = logs.filter(log => log[1] == i)
       sum += actions.calcReprOfSeries(thisSeries)
     }
-    return sum / 10
+    return sum / setting.trials
   },
   calcReprOfSeries: thisSeries => {
     const correctTrials = thisSeries.filter(trial => trial[5] == 1)
     if (correctTrials.length == 0) {
       return thisSeries[0][4] - 1
     } else {
-      return Math.max(correctTrials.map(trial => trial[4]))
+      return Math.max(...correctTrials.map(trial => trial[4]))
     }
   },
   updateInput: e => state => {
@@ -117,7 +122,7 @@ const view = (state, actions) => (
         value: state.inputBox,
         oninput: actions.updateInput,
         onkeydown: actions.submit,
-        [state.inputDisabled]: "disabled"
+        [state.readonly]: "readonly"
       })
     ]),
     h("br"),
