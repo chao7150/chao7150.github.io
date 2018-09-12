@@ -33,7 +33,6 @@ const actions = {
     return { ...state, visibility: "hidden" }
   },
   startAnswer: () => state => {
-    console.log(document.getElementById("js-input-form"))
     document.getElementById("js-input-form").focus()
     return { ...state, inputDisabled: "" }
   },
@@ -52,7 +51,6 @@ const actions = {
       correct ? 1 : 0
     ]
     const nextSeriesType = actions.switchSeriesType(correct)
-    console.log(nextSeriesType)
     state = {
       ...state,
       trialNum: state.trialNum + 1,
@@ -64,16 +62,13 @@ const actions = {
       inputDisabled: "disabled",
       seriesNum: state.seriesNum + (nextSeriesType != state.seriesType ? 1 : 0),
     }
-    if (state.seriesNum == 2) {
-      actions.endExp(latestTrialLog)
+    if (state.seriesNum == 11) {
+      const memCap = actions.calcMemCap(state.log)
+      return { ...state, result: actions.createCSV(state.log.concat([["Your memory capacity", memCap]])) }
     } else {
       setTimeout(actions.startMemorize, 1000)
       return state
     }
-  },
-  endExp: finalState => actions => {
-    const memCap = actions.calcMemCap(finalState.log)
-    return { ...state, result: actions.createCSV(finalState.log.concat(["Your memory capacity is", memCap])) }
   },
   createCSV: array2d => array2d.map(row => row.join(",")).join("\r\n"),
   switchSeriesType: correct => state => {
@@ -88,18 +83,18 @@ const actions = {
       return state.seriesType
     }
   },
-  calcMemCap: logs => actions => {
+  calcMemCap: logs => {
     var sum = 0
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 10; i++) {
       const thisSeries = logs.filter(log => log[1] == i)
       sum += actions.calcReprOfSeries(thisSeries)
     }
-    return sum / 20
+    return sum / 10
   },
   calcReprOfSeries: thisSeries => {
     const correctTrials = thisSeries.filter(trial => trial[5] == 1)
     if (correctTrials.length == 0) {
-      return thisSeries[0][numberOfDigits] - 1
+      return thisSeries[0][4] - 1
     } else {
       return Math.max(correctTrials.map(trial => trial[4]))
     }
