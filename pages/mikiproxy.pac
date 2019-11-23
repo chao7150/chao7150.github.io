@@ -4,7 +4,8 @@ function FindProxyForURL(url, host) {
     /googleapis.com/,
     /google.com/,
     /google-analytics.com/,
-    /youtube.com/
+    /youtube.com/,
+    /ytimg.com/
   ];
   const proxy = "fukamushi.chao.tokyo"; //プロキシサーバーのURL
   const port = "3128"; //プロキシサーバーのポート
