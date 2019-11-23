@@ -5,15 +5,12 @@ function FindProxyForURL(url, host) {
     /google.com/,
     /google-analytics.com/,
     /youtube.com/,
-    /ytimg.com/
+    /ytimg.com/,
+    /ugtop/ // 確認用
   ];
-  const proxy = "fukamushi.chao.tokyo"; //プロキシサーバーのURL
-  const port = "3128"; //プロキシサーバーのポート
-  const isGoogle = hostRegExps.find(
-    hostRegExp => host.match(hostRegExp) != null
-  );
+  const isGoogle = hostRegExps.some(hostRegExp => host.match(hostRegExp));
   if (isGoogle) {
-    return "PROXY " + proxy + ":" + port;
+    return "PROXY fukamushi.chao.tokyo:3128";
   } else {
     return "DIRECT";
   }
