@@ -6,7 +6,7 @@ function FindProxyForURL(url, host) {
     /google-analytics.com/,
     /youtube.com/
   ];
-  const proxy = "https://fukamushi.chao.tokyo"; //プロキシサーバーのURL
+  const proxy = "fukamushi.chao.tokyo"; //プロキシサーバーのURL
   const port = "3128"; //プロキシサーバーのポート
   const isGoogle = hostRegExps.find(
     hostRegExp => host.match(hostRegExp) != null
