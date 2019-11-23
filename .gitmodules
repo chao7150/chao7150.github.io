@@ -1,3 +1,6 @@
 [submodule "memory_exp"]
 	path = memory_exp
 	url = https://github.com/chao7150/memory_exp.git
+[submodule "squid-docker-compose"]
+	path = squid-docker-compose
+	url = https://github.com/chao7150/squid-docker-compose.git
