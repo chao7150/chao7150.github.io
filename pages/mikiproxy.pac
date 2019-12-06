@@ -1,5 +1,6 @@
 function FindProxyForURL(url, host) {
   const hostRegExps = [
+    /ggpht.com/, 
     /gstatic.com/,
     /googleapis.com/,
     /google.com/,
