@@ -1,0 +1,39 @@
+<html>
+
+<head>
+  <title>
+    アラートならすくん
+  </title>
+  <style type="text/css">
+    #form {
+      text-align: center;
+    }
+
+    #button {
+      margin: 60px;
+      font-size: 60px;
+      padding: 0.5em 1em;
+      text-decoration: none;
+      background: #ff4b00;
+      /*ボタン色*/
+      color: #fff;
+      border-bottom: solid 4px rgb(192, 66, 12);
+      border-radius: 3px;
+    }
+
+    #button:hover {
+      color: rgb(182, 182, 182);
+      background: rgb(194, 58, 0);
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+
+<body>
+  <form id="form" action="https://us-central1-alert-as-a-service.cloudfunctions.net/api/v1/hooks" method="POST">
+    <button id="button">サーバー破壊</button>
+  </form>
+</body>
+
+</html>
