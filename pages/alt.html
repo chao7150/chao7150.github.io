@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>img</title>
+    <style>
+        .example {
+            border: 2px;
+            border-style: solid;
+            margin: 4px;
+        }
+        .explanation {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <h2>replaced element - widthとheightが設定済みかつalt属性なし</h2>
+        <div class="example">
+            <h3>Image smaller than alt image</h3><img src="hoge.png" style="width: 14px; height: 14px;">
+            <pre>&lt;img src=&quot;hoge.png&quot; style=&quot;width: 14px; height: 14px;&quot;&gt;</pre>
+            <p class="explanation">widthかheightのどちらかが小さすぎるとき、HideBrokenImageIcon</p>
+        </div>
+        <div class="example">
+            <h3>Image bigger than alt image</h3><img src="hoge.png" style="width: 19px; height: 19px;">
+            <pre>&lt;img src=&quot;hoge.png&quot; style=&quot;width: 19px; height: 19px;&quot;&gt;</pre>
+            <p class="explanation">widthもheightも十分大きいとき、borderが設定されてalttext-imageが表示される</p>
+        </div>
+
+    </section>
+    <section>
+        <h2>not replaced element</h2>
+        <div class="example">
+            <h3>element represents nothing (alt empty string)</h3><img src="hoge.png" alt="">
+            <pre>&lt;img src=&quot;hoge.png&quot; alt=&quot;&quot;&gt;</pre>
+            <p class="explanation">alt属性が存在して空文字のとき、HideBrokenImageIcon</p>
+        </div>
+        <div class="example">
+            <h3>element represents nothing</h3><img>
+            <pre>&lt;img&gt;</pre>
+            <p class="explanation">src属性が存在せず、かつalt属性が存在しないか空文字のとき、HideBrokenImageIcon</p>
+        </div>
+        <div class="example">
+            <h3>element represents</h3><img src="hoge.png" alt=" ">
+            <pre>&lt;img src=&quot;hoge.png&quot; alt=&quot; &quot;&gt;</pre>
+            <p class="explanation">alt属性が空文字ではない</p>
+        </div>
+        <div class="example">
+            <h3>element represents</h3><img src="hoge.png" alt="text">
+            <pre>&lt;img src=&quot;hoge.png&quot; alt=&quot;text&quot;&gt;</pre>
+            <p class="explanation">alt属性が空文字ではない</p>
+        </div>
+    </section>
+</body>
+
+</html>
