@@ -9,19 +9,33 @@
             border-style: solid;
             margin: 4px;
         }
+
         .explanation {
             margin: 4px 0;
+        }
+
+        .wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .title {
+            grid-column-start: 1;
+            grid-column-end: 3;
         }
     </style>
 </head>
 
 <body>
-    <section>
-        <h2>replaced element - widthとheightが設定済みかつalt属性なし</h2>
+    <div class="wrapper">
+        <h2 class="title">replaced element - widthとheightが設定済みかつalt属性なし</h2>
         <div class="example">
             <h3>Image smaller than alt image</h3><img src="hoge.png" style="width: 14px; height: 14px;">
             <pre>&lt;img src=&quot;hoge.png&quot; style=&quot;width: 14px; height: 14px;&quot;&gt;</pre>
             <p class="explanation">widthかheightのどちらかが小さすぎるとき、HideBrokenImageIcon</p>
+        </div>
+        <div class="supplement">
+            <p>hogehoge</p>
         </div>
         <div class="example">
             <h3>Image bigger than alt image</h3><img src="hoge.png" style="width: 19px; height: 19px;">
@@ -29,9 +43,7 @@
             <p class="explanation">widthもheightも十分大きいとき、borderが設定されてalttext-imageが表示される</p>
         </div>
 
-    </section>
-    <section>
-        <h2>not replaced element</h2>
+        <h2 class="title">not replaced element</h2>
         <div class="example">
             <h3>element represents nothing (alt empty string)</h3><img src="hoge.png" alt="">
             <pre>&lt;img src=&quot;hoge.png&quot; alt=&quot;&quot;&gt;</pre>
@@ -52,7 +64,7 @@
             <pre>&lt;img src=&quot;hoge.png&quot; alt=&quot;text&quot;&gt;</pre>
             <p class="explanation">alt属性が空文字ではない</p>
         </div>
-    </section>
+    </div>
 </body>
 
 </html>
