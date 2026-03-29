@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slay the Spire Deck Analyzer</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #2a2a2a;
+      padding: 25px;
+      border-radius: 4px;
+      border: 1px solid #444;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #555;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #ffb74d;
+    }
+    h2 {
+      font-size: 1.1rem;
+      color: #4db6ac;
+      border-left: 3px solid #4db6ac;
+      padding-left: 10px;
+      margin-top: 25px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 15px;
+      padding: 12px;
+      background: #333;
+      border-radius: 4px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    .val-display {
+      font-weight: bold;
+      color: #ffb74d;
+      min-width: 20px;
+      text-align: right;
+    }
+    input[type="range"] {
+      width: 100%;
+      cursor: pointer;
+      accent-color: #ffb74d;
+    }
+    .algorithm {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #222;
+      border: 1px dashed #666;
+    }
+    .algorithm h3 {
+      margin-top: 0;
+      font-size: 1rem;
+      color: #aed581;
+    }
+    dt {
+      font-weight: bold;
+      color: #aed581;
+      margin-top: 10px;
+    }
+    dd {
+      margin-left: 15px;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+    .reset-btn {
+      background: #c62828;
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.8rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>STS Deck Analyzer</h1>
+      <button class="reset-btn" onclick="resetAll()">リセット</button>
+    </header>
+
+    <section>
+      <h2>1. スループット（実行効率）</h2>
+      <ul>
+        <li>
+          <div class="item-header"><span>エナジーの十分さ</span><span class="val-display" id="v1">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v1', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>ドローの十分さ</span><span class="val-display" id="v2">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v2', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>カードの質（圧縮・削除）</span><span class="val-display" id="v3">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v3', this.value)">
+        </li>
+      </ul>
+
+      <h2>2. 時間軸（タイミング）</h2>
+      <ul>
+        <li>
+          <div class="item-header"><span>フロントロード（即効性）</span><span class="val-display" id="v4">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v4', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>スケーリング（加速度）</span><span class="val-display" id="v5">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v5', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>起動レイテンシ（防御機構）</span><span class="val-display" id="v6">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v6', this.value)">
+        </li>
+      </ul>
+
+      <h2>3. 外部仕様（敵のギミック）</h2>
+      <ul>
+        <li>
+          <div class="item-header"><span>範囲攻撃（AoE）</span><span class="val-display" id="v7">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v7', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>多段攻撃対策（心臓等）</span><span class="val-display" id="v8">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v8', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>デバフ・状態異常耐性</span><span class="val-display" id="v9">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v9', this.value)">
+        </li>
+      </ul>
+
+      <h2>4. HP資産（投資・負債）</h2>
+      <ul>
+        <li>
+          <div class="item-header"><span>投資余力（エリート耐性）</span><span class="val-display" id="v10">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v10', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>技術負債（休憩 vs 鍛錬）</span><span class="val-display" id="v11">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v11', this.value)">
+        </li>
+        <li>
+          <div class="item-header"><span>回復リソース</span><span class="val-display" id="v12">0</span></div>
+          <input type="range" min="0" max="10" value="0" oninput="updateVal('v12', this.value)">
+        </li>
+      </ul>
+    </section>
+
+    <div class="algorithm">
+      <h3>思考アルゴリズム</h3>
+      <dl>
+        <dt>1. 欠損（Bug）の特定</dt>
+        <dd>今のデッキが最も「落とす可能性が高い項目」はどれか？（スライダーが低い項目）</dd>
+        <dt>2. コストの評価</dt>
+        <dd>そのカードを入れる「密度低下リスク」は、解決する課題を上回るか？</dd>
+        <dt>3. 代替案の検討</dt>
+        <dd>ポーションやルート変更でその課題をバイパスできないか？</dd>
+      </dl>
+    </div>
+
+    <footer>
+      STS Support Tool / Slider Version
+    </footer>
+  </div>
+
+  <script>
+    function updateVal(id, val) {
+      document.getElementById(id).innerText = val;
+      saveState();
+    }
+
+    function resetAll() {
+      document.querySelectorAll('input[type="range"]').forEach(range => {
+        range.value = 0;
+        const displayId = range.previousElementSibling.querySelector('.val-display').id;
+        document.getElementById(displayId).innerText = 0;
+      });
+      saveState();
+    }
+
+    function saveState() {
+      const states = Array.from(document.querySelectorAll('input[type="range"]')).map(range => range.value);
+      localStorage.setItem('sts_analyzer_slider_state', JSON.stringify(states));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('sts_analyzer_slider_state');
+      if (saved) {
+        const states = JSON.parse(saved);
+        document.querySelectorAll('input[type="range"]').forEach((range, i) => {
+          if (states[i] !== undefined) {
+            range.value = states[i];
+            const displayId = range.previousElementSibling.querySelector('.val-display').id;
+            document.getElementById(displayId).innerText = states[i];
+          }
+        });
+      }
+    }
+
+    window.onload = loadState;
+  </script>
+</body>
+</html>
