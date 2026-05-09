@@ -213,6 +213,48 @@ html, body {
   width: 100%;
 }
 
+#setup {
+  display: none;
+  flex-direction: column;
+  padding: 60px;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+#setup h2 {
+  font-size: 56px;
+  color: #e94560;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.setup-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.setup-name {
+  font-size: 36px;
+  padding: 20px;
+  border: none;
+  border-radius: 15px;
+  background: #16213e;
+  color: #ffffff;
+  width: 400px;
+}
+
+.setup-intensity {
+  font-size: 36px;
+  padding: 20px;
+  border: none;
+  border-radius: 15px;
+  background: #0f3460;
+  color: #ffffff;
+  width: 200px;
+  text-align: center;
+}
+
 #restart-btn {
   margin-top: 40px;
   align-self: center;

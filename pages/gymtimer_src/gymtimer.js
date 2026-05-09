@@ -18,13 +18,21 @@ let state = {
 
 let timerInterval = null;
 
+let isSetup = true;
+
 function init() {
-  state.exercises = JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
+  const saved = localStorage.getItem('gymtimer_exercises');
+  if (saved) {
+    state.exercises = JSON.parse(saved);
+  } else {
+    state.exercises = JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
+  }
   state.currentExerciseIndex = 0;
   state.currentStepIndex = 0;
   state.isRunning = false;
   state.results = [];
   state.exercises.forEach(() => state.results.push({ reps: [] }));
+  isSetup = true;
   render();
 }
 
@@ -51,6 +59,11 @@ function isInterval(step) {
 }
 
 function render() {
+  if (isSetup) {
+    renderSetup();
+    return;
+  }
+
   const exercise = getCurrentExercise();
   const step = getCurrentStep();
   const trainingCount = getTrainingCount();
@@ -73,6 +86,28 @@ function render() {
   renderControls();
 }
 
+function renderSetup() {
+  document.getElementById('header').style.display = 'none';
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('controls').style.display = 'none';
+  document.getElementById('rep-selector').style.display = 'none';
+  
+  const setup = document.getElementById('setup');
+  setup.style.display = 'flex';
+  
+  let html = '<h2>種目設定</h2>';
+  state.exercises.forEach((exercise, i) => {
+    html += `
+      <div class="setup-row">
+        <input type="text" class="setup-name" value="${exercise.name}" data-index="${i}" placeholder="種目名">
+        <input type="text" class="setup-intensity" value="${exercise.intensity}" data-index="${i}" placeholder="強度">
+      </div>
+    `;
+  });
+  html += '<button class="btn btn-start" onclick="startAll()">トレーニング開始</button>';
+  setup.innerHTML = html;
+}
+
 function renderControls() {
   const step = getCurrentStep();
   const controls = document.getElementById('controls');
@@ -89,7 +124,6 @@ function renderControls() {
       skipBtn = '<button class="btn btn-skip" onclick="skipExercise()">スキップ</button>';
     }
     controls.innerHTML = `
-      <input type="text" id="intensity-input" class="intensity-input" placeholder="強度を入力" value="${getCurrentExercise().intensity}">
       <button class="btn btn-start" onclick="startTraining()">開始</button>
       ${skipBtn}
     `;
@@ -121,11 +155,29 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+function startAll() {
+  const nameInputs = document.querySelectorAll('.setup-name');
+  const intensityInputs = document.querySelectorAll('.setup-intensity');
+  
+  nameInputs.forEach((input, i) => {
+    state.exercises[i].name = input.value;
+  });
+  intensityInputs.forEach((input, i) => {
+    state.exercises[i].intensity = input.value;
+  });
+  
+  localStorage.setItem('gymtimer_exercises', JSON.stringify(state.exercises));
+  
+  isSetup = false;
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('rep-selector').style.display = '';
+  document.getElementById('header').style.display = 'flex';
+  document.getElementById('main').style.display = 'flex';
+  document.getElementById('controls').style.display = 'flex';
+  render();
+}
+
 function startTraining() {
-  const intensityInput = document.getElementById('intensity-input');
-  if (intensityInput) {
-    getCurrentExercise().intensity = intensityInput.value;
-  }
   state.isRunning = true;
   state.isPaused = false;
   render();
@@ -233,6 +285,7 @@ function copySummary() {
 }
 
 function restart() {
+  document.getElementById('header').style.display = 'flex';
   document.getElementById('main').style.display = 'flex';
   document.getElementById('controls').style.display = 'flex';
   document.getElementById('summary').classList.remove('show');
