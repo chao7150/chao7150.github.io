@@ -24,21 +24,24 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px 60px;
+  padding: 20px 40px;
   background: #16213e;
-  font-size: 48px;
+  font-size: 36px;
   font-weight: bold;
+  gap: 20px;
 }
 
 #exercise-name {
   color: #e94560;
+  white-space: nowrap;
 }
 
 #step-info {
   color: #0f3460;
   background: #ffffff;
-  padding: 10px 30px;
+  padding: 8px 20px;
   border-radius: 10px;
+  white-space: nowrap;
 }
 
 #main {
