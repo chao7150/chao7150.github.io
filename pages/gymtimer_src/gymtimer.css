@@ -255,6 +255,13 @@ html, body {
   text-align: center;
 }
 
+.setup-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 #restart-btn {
   margin-top: 40px;
   align-self: center;

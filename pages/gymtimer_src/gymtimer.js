@@ -17,8 +17,19 @@ let state = {
 };
 
 let timerInterval = null;
+let wakeLock = null;
 
 let isSetup = true;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (e) {
+    console.log('Wake Lock not available');
+  }
+}
 
 function init() {
   const saved = localStorage.getItem('gymtimer_exercises');
@@ -86,6 +97,14 @@ function render() {
   renderControls();
 }
 
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
 function renderSetup() {
   document.getElementById('header').style.display = 'none';
   document.getElementById('main').style.display = 'none';
@@ -104,7 +123,12 @@ function renderSetup() {
       </div>
     `;
   });
-  html += '<button class="btn btn-start" onclick="startAll()">トレーニング開始</button>';
+  html += `
+    <div class="setup-buttons">
+      <button class="btn btn-start" onclick="startAll()">トレーニング開始</button>
+      <button class="btn btn-skip" onclick="toggleFullscreen()">全画面</button>
+    </div>
+  `;
   setup.innerHTML = html;
 }
 
@@ -155,7 +179,7 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function startAll() {
+async function startAll() {
   const nameInputs = document.querySelectorAll('.setup-name');
   const intensityInputs = document.querySelectorAll('.setup-intensity');
   
@@ -167,6 +191,8 @@ function startAll() {
   });
   
   localStorage.setItem('gymtimer_exercises', JSON.stringify(state.exercises));
+  
+  await requestWakeLock();
   
   isSetup = false;
   document.getElementById('setup').style.display = 'none';
